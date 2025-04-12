@@ -1,0 +1,80 @@
+#canvas {
+  width: 100vw;
+  height: 100vh;
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#canvas img {
+    object-fit: contain;
+}
+.click {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid black;
+    background-color: white; 
+    transition: transform 0.2s;
+}
+
+.shot-wrapper:hover .click {
+    transform: scale(2);
+}
+
+.stat-dialog {
+    position: absolute;
+    top: -55px;
+    left: 25px;
+    background-color: black;
+    color: white;
+    padding: 4px 8px;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    z-index: 999;
+    display: flex;
+}
+
+.shot-dialog {
+    position: absolute;
+    top: -55px;
+    left: 25px;
+    background-color: none;
+    padding: 4px 8px;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    z-index: 999;
+    display: flex;
+}
+
+.shot-button {
+    background-color: #eee;
+    border: 1px solid #888;
+    padding: 4px 8px;
+    margin: 0 4px;
+    font-size: 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: white;
+}
+
+.shot-button.make {
+    background-color: green;
+}
+
+.shot-button.miss {
+    background-color: red;
+}
+
+.shot-button:hover {
+    background-color: #ddd;
+}
+
