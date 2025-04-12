@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>
-            Basketball Shot Tracker
-        </title>
-        <script src="./main.js"></script>
-        <link rel="stylesheet" href="./styles.css">
-    </head>
-    <body>
-        <div id="canvas" >
-            <img id="court" src="./court.png" />
-        </div>
-    </body>
-</html>
 
+<head>
+    <title>
+        Basketball Shot Tracker
+    </title>
+    <script src="./main.js"></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <div id="controls-panel">
+        <div id="controls-header">
+            <button id="toggle-controls">☰</button>
+            <span>Shot Tracker</span>
+        </div>
+        <div id="controls-body">
+            <button id="start-button" class="shot-selection selected">Single</button>
+            <button id="stop-button" class="shot-selection">Multiple</button>
+        </div>
+    </div>
+
+    <div id="canvas">
+        <img id="court" src="./court.png" />
+    </div>
+</body>
+
+</html>

@@ -1,27 +1,95 @@
-#canvas {
-  width: 100vw;
-  height: 100vh;
-  margin: auto;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+body {
+    margin: 0;
+    background-color: #333;
+    overflow: hidden;
+    height: 100%;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#controls-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #222;
+    color: white;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    transition: max-height 0.3s ease;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+#controls-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+}
+
+#controls-header span {
+    margin-left: 10px;
+    font-size: 1.2rem;
+}
+
+#toggle-controls {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#controls-body {
+    display: flex;
+    padding: 10px;
+    background-color: #444;
+    gap: 10px;
+}
+
+.shot-selection {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.shot-selection.selected {
+    background-color: #2ecc71; /* a nice green */
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+
+#canvas {
+    width: 100%;
+    top: 50px;
+    left: 0;
+    height: calc(100% - 50px);
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
 #canvas img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
+
 .click {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     border: 1px solid black;
-    background-color: white; 
+    background-color: white;
     transition: transform 0.2s;
 }
 
@@ -77,4 +145,45 @@
 .shot-button:hover {
     background-color: #ddd;
 }
+.multi-shot-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 4px 0;
+}
 
+.multi-input {
+    padding: 6px 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 120px;
+}
+
+.shot-button.save {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.shot-button.save:hover {
+    background-color: #2980b9;
+}
+
+#ghost-circle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px dashed #333;
+    background-color: rgba(255, 255, 255, 0.4);
+    pointer-events: none; /* So it doesn’t block clicks */
+    display: none;
+    transform: translate(-50%, -50%); /* Center the circle on the mouse */
+    z-index: 1000;
+}
