@@ -23,13 +23,34 @@ body {
 #controls-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 10px;
     background-color: #333;
 }
 
+.controls-left,
+.controls-center,
+.controls-right {
+    display: flex;
+    align-items: center;
+}
+
+.controls-center {
+  flex: 1;
+  justify-content: center;
+}
+
+.controls-left {
+  gap: 10px;
+}
+
+.controls-right {
+  gap: 10px;
+}
+
 #controls-header span {
-    margin-left: 10px;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 #toggle-controls {
@@ -38,13 +59,6 @@ body {
     color: white;
     font-size: 1.5rem;
     cursor: pointer;
-}
-
-#controls-body {
-    display: flex;
-    padding: 10px;
-    background-color: #444;
-    gap: 10px;
 }
 
 .shot-selection {
@@ -59,7 +73,8 @@ body {
 }
 
 .shot-selection.selected {
-    background-color: #2ecc71; /* a nice green */
+    background-color: #2ecc71;
+    /* a nice green */
     color: white;
     transform: scale(1.05);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
@@ -145,6 +160,7 @@ body {
 .shot-button:hover {
     background-color: #ddd;
 }
+
 .multi-shot-form {
     display: flex;
     flex-direction: column;
@@ -173,17 +189,4 @@ body {
 
 .shot-button.save:hover {
     background-color: #2980b9;
-}
-
-#ghost-circle {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px dashed #333;
-    background-color: rgba(255, 255, 255, 0.4);
-    pointer-events: none; /* So it doesn’t block clicks */
-    display: none;
-    transform: translate(-50%, -50%); /* Center the circle on the mouse */
-    z-index: 1000;
 }

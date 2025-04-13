@@ -1,4 +1,35 @@
-function addCircle(clickCoords) {
+function savePoints() {
+    const data = JSON.stringify(points);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "points.json";
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importPoints(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            points = importedData;
+            console.log("Points: ", points);
+        } catch (err) {
+            console.error("Failed to import points: ", err);
+            alert("Failed to import points.")
+        }
+    }
+
+    reader.readAsText(file);
+}
+
+function refreshDisplay() {
+    const canvas = document.getElementById('canvas')
+}
+
+function addCircle(pointData) {
     const wrapper = document.createElement("div");
     wrapper.classList.add("shot-wrapper");
     wrapper.style.position = "absolute";
@@ -12,16 +43,17 @@ function addCircle(clickCoords) {
     statDialog.classList.add("stat-dialog");
 
     const now = new Date();
-    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const timeString = now.toLocaleTimeString([],
+        { hour: '2-digit', minute: '2-digit', second: '2-digit' }
+    );
 
     let statText = `Time: ${timeString}`;
-
 
     statDialog.textContent = statText;
 
     statDialog.style.position = "absolute";
-    statDialog.style.left = `${clickCoords.x + 25}px`;
-    statDialog.style.top = `${clickCoords.y - 20}px`;
+    statDialog.style.left = `${pointData.x + 25}px`;
+    statDialog.style.top = `${pointData.y - 20}px`;
     statDialog.style.display = "none";
 
     point.addEventListener("mouseover", () => {
@@ -34,68 +66,25 @@ function addCircle(clickCoords) {
 
     const shotDialog = document.createElement("div");
     shotDialog.classList.add("shot-dialog");
-
-    if (selectionType === selectionTypes.SINGLE) {
-        const makeButton = document.createElement("button");
-        const missButton = document.createElement("button");
-
-        makeButton.textContent = "✓";
-        missButton.textContent = "✗";
-
-        makeButton.classList.add("shot-button", "make");
-        missButton.classList.add("shot-button", "miss");
-
-        makeButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            point.style.backgroundColor = "green";
-            shotDialog.style.display = "none";
-            if (selectionType === selectionTypes.SINGLE) {
+    if (pointData.shots > 0) { // if there are shots recorded (this is an import)
+        if (pointData.selectionType === selectionTypes.SINGLE) {
+            // check for make or miss to determine point color
+            if (pointData.makes > 0) {
+                point.style.backgroundColor = "green";
                 statDialog.textContent = 'MAKE - ' + statDialog.textContent;
-            }
-        });
-
-        missButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            point.style.backgroundColor = "red";
-            shotDialog.style.display = "none";
-            if (selectionType === selectionTypes.SINGLE) {
+            } else {
+                point.style.backgroundColor = "red";
                 statDialog.textContent = 'MISS - ' + statDialog.textContent;
             }
-        });
 
-        shotDialog.appendChild(makeButton);
-        shotDialog.appendChild(missButton);
-    }
-
-    if (selectionType === selectionTypes.MULTIPLE) {
-        const formWrapper = document.createElement("div");
-        formWrapper.classList.add("multi-shot-form");
-
-        const totalInput = document.createElement("input");
-        totalInput.type = "number";
-        totalInput.placeholder = "Total shots";
-        totalInput.classList.add("multi-input");
-
-        const makesInput = document.createElement("input");
-        makesInput.type = "number";
-        makesInput.placeholder = "Makes";
-        makesInput.classList.add("multi-input");
-
-        const saveButton = document.createElement("button");
-        saveButton.textContent = "Save";
-        saveButton.classList.add("shot-button", "save");
-
-        saveButton.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const totalShots = parseInt(totalInput.value);
-            const madeShots = parseInt(makesInput.value);
-
-            if (isNaN(totalShots) || isNaN(madeShots) || totalShots < madeShots) {
-                alert("Invalid values.");
-                return;
-            }
+        } else if (pointData.selectionType === selectionTypes.MULTIPLE) {
+            // determine color of point based on percentage made
+            // TODO: YOU STOPPED HERE ----------------------------------------------
             statText = `\nMakes: ${madeShots}, Misses: ${totalShots - madeShots}`;
             statDialog.textContent = statText;
+            pointData['totalShots'] = totalShots
+            pointData['makes'] = madeShots
+            points.push(pointData);
 
             const percent = madeShots / totalShots;
             if (percent >= 0.7) {
@@ -105,16 +94,90 @@ function addCircle(clickCoords) {
             } else {
                 point.style.backgroundColor = "red";
             }
+        }
+    } else if (pointData.shots === 0) { // if there have been no shots recorded (aka this is a new point, not an import)
+        if (pointData.selectionType === selectionTypes.SINGLE) {
+            const makeButton = document.createElement("button");
+            const missButton = document.createElement("button");
 
-            shotDialog.style.display = "none";
-        });
+            makeButton.textContent = "✓";
+            missButton.textContent = "✗";
 
-        formWrapper.appendChild(totalInput);
-        formWrapper.appendChild(makesInput);
-        formWrapper.appendChild(saveButton);
+            makeButton.classList.add("shot-button", "make");
+            missButton.classList.add("shot-button", "miss");
 
-        shotDialog.appendChild(formWrapper);
+            makeButton.addEventListener("click", (e) => {
+                e.stopPropagation();
+                point.style.backgroundColor = "green";
+                shotDialog.style.display = "none";
+                statDialog.textContent = 'MAKE - ' + statDialog.textContent;
+                pointData.makes = 1
+                points.push(pointData);
+            });
+
+            missButton.addEventListener("click", (e) => {
+                e.stopPropagation();
+                point.style.backgroundColor = "red";
+                shotDialog.style.display = "none";
+                statDialog.textContent = 'MISS - ' + statDialog.textContent;
+                points.push(pointData);
+            });
+
+            shotDialog.appendChild(makeButton);
+            shotDialog.appendChild(missButton);
+        } else if (pointData.selectionType === selectionTypes.MULTIPLE) {
+            const formWrapper = document.createElement("div");
+            formWrapper.classList.add("multi-shot-form");
+
+            const totalInput = document.createElement("input");
+            totalInput.type = "number";
+            totalInput.placeholder = "Total shots";
+            totalInput.classList.add("multi-input");
+
+            const makesInput = document.createElement("input");
+            makesInput.type = "number";
+            makesInput.placeholder = "Makes";
+            makesInput.classList.add("multi-input");
+
+            const saveButton = document.createElement("button");
+            saveButton.textContent = "Save";
+            saveButton.classList.add("shot-button", "save");
+
+            saveButton.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const totalShots = parseInt(totalInput.value);
+                const madeShots = parseInt(makesInput.value);
+
+                if (isNaN(totalShots) || isNaN(madeShots) || totalShots < madeShots) {
+                    alert("Invalid values.");
+                    return;
+                }
+                statText = `\nMakes: ${madeShots}, Misses: ${totalShots - madeShots}`;
+                statDialog.textContent = statText;
+                pointData['totalShots'] = totalShots
+                pointData['makes'] = madeShots
+                points.push(pointData);
+
+                const percent = madeShots / totalShots;
+                if (percent >= 0.7) {
+                    point.style.backgroundColor = "green";
+                } else if (percent >= 0.4) {
+                    point.style.backgroundColor = "orange";
+                } else {
+                    point.style.backgroundColor = "red";
+                }
+
+                shotDialog.style.display = "none";
+            });
+
+            formWrapper.appendChild(totalInput);
+            formWrapper.appendChild(makesInput);
+            formWrapper.appendChild(saveButton);
+
+            shotDialog.appendChild(formWrapper);
+        }
     }
+
 
     wrapper.appendChild(point);
     wrapper.appendChild(shotDialog);
@@ -168,18 +231,16 @@ function setEventListeners() {
         };
         const isInsideCourt = verifyClick(clickCoords);
         if (isInsideCourt) {
-            addCircle(clickCoords);
+            var pointData = {
+                x: clickCoords.x,
+                y: clickCoords.y,
+                selectionType: selectionType,
+                totalShots: 0,
+                makes: 0
+            };
+            addCircle(pointData);
         } else {
             console.log("Click outside the court");
-        }
-    });
-
-    document.getElementById("toggle-controls").addEventListener("click", function() {
-        const panel = document.getElementById("controls-panel");
-        if (panel.style.maxHeight === "50px" || panel.style.maxHeight === "") {
-            panel.style.maxHeight = "200px";
-        } else {
-            panel.style.maxHeight = "50px";
         }
     });
 
@@ -195,45 +256,21 @@ function setEventListeners() {
             }
         });
     })
-}
 
-function setupGhostCursor() {
-    const ghostCircle = document.createElement("div");
-    ghostCircle.id = "ghost-circle";
-    document.body.appendChild(ghostCircle);
+    document.getElementById("save-button").addEventListener('click', () => {
+        savePoints()
+    })
 
-    const courtImage = document.getElementById("court");
-    const canvas = document.getElementById("canvas");
-
-    canvas.addEventListener("mouseenter", () => {
-        ghostCircle.style.display = "block";
-    });
-
-    canvas.addEventListener("mouseleave", () => {
-        ghostCircle.style.display = "none";
-    });
-
-    canvas.addEventListener("mousemove", (e) => {
-        const isInCourt = verifyClick({
-            x: e.clientX,
-            y: e.clientY
-        })
-
-
-        if (isInCourt) {
-            ghostCircle.style.left = `${e.clientX}px`;
-            ghostCircle.style.top = `${e.clientY}px`;
-            ghostCircle.style.display = "block";
-        } else {
-            ghostCircle.style.display = "none";
-        }
-    });
+    document.getElementById("import-button").addEventListener('change', (event) => {
+        const file = event.target.files[0]
+        if (!file) return;
+        importPoints(file)
+    })
 }
 
 function init() {
     setEventListeners();
     setCanvasHeight();
-    setupGhostCursor();
 }
 
 window.onload = () => {
@@ -250,4 +287,7 @@ const selectionTypes = {
 }
 
 var selectionType = selectionTypes.SINGLE;
+var pointX = 0.0;
+var pointY = 0.0;
+var points = [];
 

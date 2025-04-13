@@ -12,12 +12,17 @@
 <body>
     <div id="controls-panel">
         <div id="controls-header">
-            <button id="toggle-controls">☰</button>
-            <span>Shot Tracker</span>
-        </div>
-        <div id="controls-body">
-            <button id="start-button" class="shot-selection selected">Single</button>
-            <button id="stop-button" class="shot-selection">Multiple</button>
+            <div class="controls-left">
+                <button id="start-button" class="shot-selection selected">Single</button>
+                <button id="stop-button" class="shot-selection">Multiple</button>
+            </div>
+            <div class="controls-center">
+                <span>Shot Tracker</span>
+            </div>
+            <div class="controls-right">
+                <input id="import-button" type="file" accept="application/json" class="import-button" title="Import" />
+                <button id="save-button" class="shot-button save">Save</button>
+            </div>
         </div>
     </div>
 
