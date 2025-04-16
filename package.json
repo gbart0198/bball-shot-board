@@ -1,0 +1,23 @@
+{
+  "name": "shot-tracker",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbart0198/bball-shot-board.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gbart0198/bball-shot-board/issues"
+  },
+  "homepage": "https://github.com/gbart0198/bball-shot-board#readme",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.2.6"
+  }
+}
