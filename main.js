@@ -15,26 +15,28 @@ function importPoints(file) {
         try {
             const importedData = JSON.parse(e.target.result);
             points = importedData;
-            console.log("Points: ", points);
+            points.forEach((point) => {
+                addCircle(point);
+            });
         } catch (err) {
             console.error("Failed to import points: ", err);
-            alert("Failed to import points.")
+            alert("Failed to import points.");
         }
-    }
+    };
 
     reader.readAsText(file);
 }
 
 function refreshDisplay() {
-    const canvas = document.getElementById('canvas')
+    const canvas = document.getElementById("canvas");
 }
 
 function addCircle(pointData) {
     const wrapper = document.createElement("div");
     wrapper.classList.add("shot-wrapper");
     wrapper.style.position = "absolute";
-    wrapper.style.left = `${clickCoords.x - 10}px`;
-    wrapper.style.top = `${clickCoords.y - 10}px`;
+    wrapper.style.left = `${pointData.x - 10}px`;
+    wrapper.style.top = `${pointData.y - 10}px`;
 
     const point = document.createElement("div");
     point.classList.add("click");
@@ -43,9 +45,11 @@ function addCircle(pointData) {
     statDialog.classList.add("stat-dialog");
 
     const now = new Date();
-    const timeString = now.toLocaleTimeString([],
-        { hour: '2-digit', minute: '2-digit', second: '2-digit' }
-    );
+    const timeString = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    });
 
     let statText = `Time: ${timeString}`;
 
@@ -66,27 +70,24 @@ function addCircle(pointData) {
 
     const shotDialog = document.createElement("div");
     shotDialog.classList.add("shot-dialog");
-    if (pointData.shots > 0) { // if there are shots recorded (this is an import)
+    if (pointData.totalShots > 0) {
+        // if there are shots recorded (this is an import)
         if (pointData.selectionType === selectionTypes.SINGLE) {
             // check for make or miss to determine point color
             if (pointData.makes > 0) {
                 point.style.backgroundColor = "green";
-                statDialog.textContent = 'MAKE - ' + statDialog.textContent;
+                statDialog.textContent = "MAKE - " + statDialog.textContent;
             } else {
                 point.style.backgroundColor = "red";
-                statDialog.textContent = 'MISS - ' + statDialog.textContent;
+                statDialog.textContent = "MISS - " + statDialog.textContent;
             }
-
         } else if (pointData.selectionType === selectionTypes.MULTIPLE) {
             // determine color of point based on percentage made
             // TODO: YOU STOPPED HERE ----------------------------------------------
-            statText = `\nMakes: ${madeShots}, Misses: ${totalShots - madeShots}`;
+            statText = `\nMakes: ${pointData.makes}, Misses: ${pointData.totalShots - pointData.makes}`;
             statDialog.textContent = statText;
-            pointData['totalShots'] = totalShots
-            pointData['makes'] = madeShots
-            points.push(pointData);
 
-            const percent = madeShots / totalShots;
+            const percent = pointData.makes / pointData.totalShots;
             if (percent >= 0.7) {
                 point.style.backgroundColor = "green";
             } else if (percent >= 0.4) {
@@ -95,8 +96,11 @@ function addCircle(pointData) {
                 point.style.backgroundColor = "red";
             }
         }
-    } else if (pointData.shots === 0) { // if there have been no shots recorded (aka this is a new point, not an import)
+    } else if (pointData.totalShots === 0) {
+        // if there have been no shots recorded (aka this is a new point, not an import)
+        console.log("New point created");
         if (pointData.selectionType === selectionTypes.SINGLE) {
+            pointData.totalShots = 1;
             const makeButton = document.createElement("button");
             const missButton = document.createElement("button");
 
@@ -110,8 +114,8 @@ function addCircle(pointData) {
                 e.stopPropagation();
                 point.style.backgroundColor = "green";
                 shotDialog.style.display = "none";
-                statDialog.textContent = 'MAKE - ' + statDialog.textContent;
-                pointData.makes = 1
+                statDialog.textContent = "MAKE - " + statDialog.textContent;
+                pointData.makes = 1;
                 points.push(pointData);
             });
 
@@ -119,7 +123,7 @@ function addCircle(pointData) {
                 e.stopPropagation();
                 point.style.backgroundColor = "red";
                 shotDialog.style.display = "none";
-                statDialog.textContent = 'MISS - ' + statDialog.textContent;
+                statDialog.textContent = "MISS - " + statDialog.textContent;
                 points.push(pointData);
             });
 
@@ -154,8 +158,8 @@ function addCircle(pointData) {
                 }
                 statText = `\nMakes: ${madeShots}, Misses: ${totalShots - madeShots}`;
                 statDialog.textContent = statText;
-                pointData['totalShots'] = totalShots
-                pointData['makes'] = madeShots
+                pointData["totalShots"] = totalShots;
+                pointData["makes"] = madeShots;
                 points.push(pointData);
 
                 const percent = madeShots / totalShots;
@@ -177,7 +181,6 @@ function addCircle(pointData) {
             shotDialog.appendChild(formWrapper);
         }
     }
-
 
     wrapper.appendChild(point);
     wrapper.appendChild(shotDialog);
@@ -221,13 +224,12 @@ function setCanvasHeight() {
     canvas.style.height = `${viewportHeight - panelHeight}px`;
 }
 
-
 function setEventListeners() {
     const canvas = document.getElementById("canvas");
     canvas.addEventListener("click", function(event) {
         const clickCoords = {
             x: event.clientX,
-            y: event.clientY
+            y: event.clientY,
         };
         const isInsideCourt = verifyClick(clickCoords);
         if (isInsideCourt) {
@@ -236,7 +238,7 @@ function setEventListeners() {
                 y: clickCoords.y,
                 selectionType: selectionType,
                 totalShots: 0,
-                makes: 0
+                makes: 0,
             };
             addCircle(pointData);
         } else {
@@ -246,8 +248,10 @@ function setEventListeners() {
 
     document.querySelectorAll(".shot-selection").forEach((button) => {
         button.addEventListener("click", () => {
-            document.querySelectorAll('.shot-selection').forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
+            document
+                .querySelectorAll(".shot-selection")
+                .forEach((btn) => btn.classList.remove("selected"));
+            button.classList.add("selected");
             const selection = button.textContent.trim().toLowerCase();
             if (selection === "single") {
                 selectionType = selectionTypes.SINGLE;
@@ -255,17 +259,19 @@ function setEventListeners() {
                 selectionType = selectionTypes.MULTIPLE;
             }
         });
-    })
+    });
 
-    document.getElementById("save-button").addEventListener('click', () => {
-        savePoints()
-    })
+    document.getElementById("save-button").addEventListener("click", () => {
+        savePoints();
+    });
 
-    document.getElementById("import-button").addEventListener('change', (event) => {
-        const file = event.target.files[0]
-        if (!file) return;
-        importPoints(file)
-    })
+    document
+        .getElementById("import-button")
+        .addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            importPoints(file);
+        });
 }
 
 function init() {
@@ -275,19 +281,18 @@ function init() {
 
 window.onload = () => {
     init();
-}
+};
 
 window.onresize = () => {
     setCanvasHeight();
-}
+};
 
 const selectionTypes = {
     SINGLE: "single",
     MULTIPLE: "multiple",
-}
+};
 
 var selectionType = selectionTypes.SINGLE;
 var pointX = 0.0;
 var pointY = 0.0;
 var points = [];
-
