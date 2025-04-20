@@ -36,16 +36,16 @@ body {
 }
 
 .controls-center {
-  flex: 1;
-  justify-content: center;
+    flex: 1;
+    justify-content: center;
 }
 
 .controls-left {
-  gap: 10px;
+    gap: 10px;
 }
 
 .controls-right {
-  gap: 10px;
+    gap: 10px;
 }
 
 #controls-header span {
@@ -69,7 +69,9 @@ body {
     font-size: 1rem;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition:
+        background-color 0.2s ease,
+        transform 0.1s ease;
 }
 
 .shot-selection.selected {
@@ -79,7 +81,6 @@ body {
     transform: scale(1.05);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
 }
-
 
 #canvas {
     width: 100%;
@@ -113,16 +114,44 @@ body {
 }
 
 .stat-dialog {
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog-close-button {
     position: absolute;
-    top: -55px;
-    left: 25px;
-    background-color: black;
-    color: white;
-    padding: 4px 8px;
-    font-size: 1.5rem;
-    white-space: nowrap;
-    z-index: 999;
-    display: flex;
+    top: 5px;
+    left: 5px;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.dialog-edit-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.dialog-delete-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.dialog-content {
+    margin: 10px;
+    font-size: 14px;
+    text-align: center;
 }
 
 .shot-dialog {
